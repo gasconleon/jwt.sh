@@ -1,7 +1,12 @@
 #! /bin/bash
-# JWT encode and decode
-# Author: Alejandro Gascon
+# Version: 0.2
+# Desc:JWT encode and decode
+# Author: Alejandro Gascón
 # mail: gascon.leon@gmail.com
+# PENDING:
+# - Include decoding functions
+# - Add support for more algorithms
+# - Include default values in payload with theis correspondig values (exp, iat, sub)
 
 ayuda() {
 	echo "$0 Params:"
