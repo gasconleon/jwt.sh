@@ -6,7 +6,7 @@
 # PENDING:
 # - Include decoding functions
 # - Add support for more algorithms
-# - Include default values in payload with theis correspondig values (exp, iat, sub)
+# - Include default values in payload with their correspondig values (exp, iat, sub)
 
 ayuda() {
 	echo "$0 Params:"
