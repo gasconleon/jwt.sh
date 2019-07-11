@@ -16,8 +16,8 @@ ayuda() {
 	echo -e "\t\t* r | R | RSA | RS256  -> for RSA SHA256. This will require to set -P option"
 	echo -e "\t-S | --secret <value>\t\tSecret to be used with HS256"
 	echo -e "\t-P | --pub-key | --pub <file>\tPath to file with the Private RSA to sign the token"
-	echo -e "\t-H | --header <value>\t\tJSON value to set as header part of the JWT. If you don't specify this option, It will be generated automatically with -k | --kid value"
-	echo -e "\t-p | --payload <value>\t\tJSON value to set as payload part of the JWT"
+	echo -e "\t-H | --header <value>\t\tJSON value to set as header part of the JWT.\n\t\t\t\t\tIf you don't specify this option, It will be generated automatically with -k | --kid value"
+	echo -e "\t-p | --payload <value>\t\tJSON value to set as payload part of the JWT.\n\t\t\t\t\tIf payload is not specified, it will be created with default values for exp (+1 hour), iat (now), nbf (-10 seconds) and sub (jwt.sh)"
 	echo -e "\t-k | --kid <value>\t\tSet the kid value to be used when autogenerating the header"
 }
 
@@ -81,6 +81,9 @@ if [[ "$header" == "" ]]; then
 	header=$(echo -n "$header" | openssl enc -base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n' )
 fi
 
+if [[ "$payload" == "" ]]; then
+		payload=$( echo -n "{\"exp\": \"$(date +%s -d +1hour)\", \"iat\": \"$(date +%s)\", \"nbf\": \"$(date +%s -d -1second)\", \"sub\": \"jwt.sh\"}" | openssl enc -base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n' )
+fi
 
 case $cipher in
 	HS256)
@@ -89,7 +92,7 @@ case $cipher in
 		[ $? -ne 0 ] && echo "Some problem occur when generating signature. Error: $signature" && exit 3
 	;;
 	RS256)
-		[[ "$pub_key" == "" ]] && echo "You need to set a secret with option -P" && exit 2
+		[[ "$pub_key" == "" ]] && echo "You need to specify a public key file with -P <path>" && exit 2
 		signature=$(echo -n "${header}.${payload}" | openssl dgst -sha256 -binary -sign ${pub_key} | openssl enc -base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n' )
 		[ $? -ne 0 ] && echo "Some problem occur when generating signature. Error: $signature" && exit 3
 	;;
